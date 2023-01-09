@@ -14,7 +14,7 @@ public class Server {
     static MessageHistory msgHistory;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        serverSocket = new ServerSocket(8081);
+        serverSocket = new ServerSocket(8080);
         msgHistory = new MessageHistory();
         msgHistory.start();
         msgHistory.join();

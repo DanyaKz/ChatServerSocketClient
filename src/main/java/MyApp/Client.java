@@ -2,18 +2,8 @@ package MyApp;
 
 import java.io.*;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
 
 public class Client {
-
-    static boolean status = true;
-    static BufferedWriter out;
-    static BufferedReader inputUser;
-    static BufferedReader in;
-
-
     public static void main(String[] args) throws IOException {
         new ThreadActions();
     }
@@ -24,20 +14,25 @@ public class Client {
 class ThreadActions {
 
     boolean status = true;
+    Socket socket;
     BufferedReader in;
     BufferedWriter out;
     BufferedReader inputUser;
+    Thread read = new ReadMsg();
+    Thread write = new WriteMsg();
 
     public ThreadActions() {
-        try (Socket socket = new Socket("127.0.0.1", 8081)) {
+        try  {
+            socket = new Socket("127.0.0.1", 8080);
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             inputUser = new BufferedReader(new InputStreamReader(System.in));
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             System.out.print("Text your name: ");
 
-            new ReadMsg().start();
-            new WriteMsg().start();
+            read.start();
+            write.start();
+
         } catch (IOException ignored) {
         }
 
@@ -46,16 +41,13 @@ class ThreadActions {
     private class ReadMsg extends Thread {
         @Override
         public void run() {
-
             String str;
             try {
                 while (status) {
                     str = in.readLine();
                     if (str != null) System.out.println(str);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (IOException ignored) {}
         }
     }
 
@@ -71,6 +63,10 @@ class ThreadActions {
                     out.write(userWord + "\n");
                     out.flush();
                     if (userWord.equals("/leave")) {
+                        in.close();
+                        inputUser.close();
+                        out.close();
+                        socket.close();
                         status = false;
                     }
                 } catch (IOException e) {
