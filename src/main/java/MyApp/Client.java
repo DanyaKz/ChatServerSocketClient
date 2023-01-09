@@ -22,7 +22,7 @@ class ThreadActions {
     Thread write = new WriteMsg();
 
     public ThreadActions() {
-        try  {
+        try {
             socket = new Socket("127.0.0.1", 8080);
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             inputUser = new BufferedReader(new InputStreamReader(System.in));
@@ -47,7 +47,8 @@ class ThreadActions {
                     str = in.readLine();
                     if (str != null) System.out.println(str);
                 }
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
     }
 
